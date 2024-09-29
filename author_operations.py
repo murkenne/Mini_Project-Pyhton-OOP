@@ -1,3 +1,5 @@
+# author_operations.py
+
 class Author:
     def __init__(self, name, biography):
         self.name = name
@@ -50,15 +52,15 @@ def display_all():
         print(f"Something went wrong: {e}")
 
 
-
-def main():
+# Function to handle author operations menu
+def author_operations_menu():
     while True:
         action = input(
-            "\nEnter an action: \n1. Add a new author \n2. View author details \n3. Display all authors \n4. Exit: "
+            "\nEnter an action: \n1. Add a new author \n2. View author details \n3. Display all authors \n4. Back to Main Menu: "
         ).strip().lower()
 
-        if action == "4" or action == "exit":
-            print("Exiting the program. Goodbye!")
+        if action == "4" or action == "back":
+            print("Returning to the Main Menu.")
             break
         elif action == "1" or action == "add":
             add_author()
@@ -70,6 +72,6 @@ def main():
             print("Invalid action. Please try again.")
 
 
-# Run the main program
+# Ensure this script only runs the menu when executed directly, not on import
 if __name__ == "__main__":
-    main()
+    author_operations_menu()
