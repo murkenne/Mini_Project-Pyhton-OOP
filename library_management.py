@@ -13,20 +13,27 @@ def main():
         print("3. Author Operations")
         print("4. Quit")
 
-        # Get user action
-        action = input("Enter your choice (1, 2, 3, or 4): ").strip().lower()
+        try:
+            # Get user action
+            action = input("Enter your choice (1, 2, 3, or 4): ").strip().lower()
 
-        if action == "1":
-            book_operations_menu()
-        elif action == "2":
-            user_operations_menu()
-        elif action == "3":
-            author_operations_menu()
-        elif action == "4" or action == "quit":
-            print("Exiting the program. Goodbye!")
+            if action == "1":
+                print("\nNavigating to Book Operations...")
+                book_operations_menu()
+            elif action == "2":
+                print("\nNavigating to User Operations...")
+                user_operations_menu()
+            elif action == "3":
+                print("\nNavigating to Author Operations...")
+                author_operations_menu()
+            elif action == "4" or action == "quit":
+                print("Exiting the program. Goodbye!")
+                break
+            else:
+                print("Invalid input. Please try again.")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
             break
-        else:
-            print("Invalid input. Please try again.")
 
 
 # Run the main program

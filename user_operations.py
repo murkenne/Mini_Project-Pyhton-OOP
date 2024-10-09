@@ -1,5 +1,9 @@
-# user_module.py
+# Import the necessary module for database connection
+from connect_mysql import connect_database  # Import the connection function from your module
+import mysql.connector
+from mysql.connector import Error
 
+# Define the User class
 class User:
     def __init__(self, name, library_id, borrowed_books=None):
         """Initialize a new user with private attributes."""
@@ -49,43 +53,79 @@ class User:
         return f"Name: {self.__name}\nLibrary ID: {self.__library_id}\nBorrowed Books: {borrowed_books_list}"
 
 
-# List to store all users
-users = []
-
-# Function to add a new user
+# Function to add a new user to the database
 def add_user():
+    connection = connect_database()
+    if not connection:
+        print("Failed to connect to the database.")
+        return
+
     try:
         name = input("Enter the user's name: ")
         library_id = input("Enter the user's library ID: ")
-        new_user = User(name, library_id)
-        users.append(new_user)
-        print(f"User '{name}' added to the system.")
-    except Exception as e:
-        print(f"Something went wrong: {e}")
 
-# Function to view a specific user's details
+        cursor = connection.cursor()
+        cursor.execute(
+            "INSERT INTO users (name, library_id) VALUES (%s, %s)", (name, library_id)
+        )
+        connection.commit()
+        print(f"User '{name}' added to the database.")
+    except Error as e:
+        print(f"Failed to add user: {e}")
+    finally:
+        cursor.close()
+        connection.close()
+
+
+# Function to view a specific user's details from the database
 def view_user_details():
+    connection = connect_database()
+    if not connection:
+        print("Failed to connect to the database.")
+        return
+
     try:
         library_id = input("Enter the library ID of the user you want to view: ")
-        for user in users:
-            if user.get_library_id() == library_id:
-                print("\nUser Details:\n" + user.display_user_info())
-                return
-        print(f"No user with library ID '{library_id}' found.")
-    except Exception as e:
-        print(f"Something went wrong: {e}")
+        cursor = connection.cursor()
+        cursor.execute("SELECT name, library_id FROM users WHERE library_id = %s", (library_id,))
+        user = cursor.fetchone()
 
-# Function to display all users in the system
+        if user:
+            name, library_id = user
+            print(f"\nUser Details:\nName: {name}\nLibrary ID: {library_id}\n")
+        else:
+            print(f"No user with library ID '{library_id}' found.")
+    except Error as e:
+        print(f"Failed to retrieve user details: {e}")
+    finally:
+        cursor.close()
+        connection.close()
+
+
+# Function to display all users in the database
 def display_all_users():
+    connection = connect_database()
+    if not connection:
+        print("Failed to connect to the database.")
+        return
+
     try:
+        cursor = connection.cursor()
+        cursor.execute("SELECT name, library_id FROM users")
+        users = cursor.fetchall()
+
         if not users:
             print("No users available in the system.")
         else:
             print("\nList of all users:")
             for index, user in enumerate(users, start=1):
-                print(f"\nUser {index}:\n{user.display_user_info()}")
-    except Exception as e:
-        print(f"Something went wrong: {e}")
+                name, library_id = user
+                print(f"\nUser {index}:\nName: {name}\nLibrary ID: {library_id}")
+    except Error as e:
+        print(f"Failed to display users: {e}")
+    finally:
+        cursor.close()
+        connection.close()
 
 
 # Main program loop for user operations
